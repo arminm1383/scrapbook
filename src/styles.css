@@ -1,0 +1,151 @@
+:root {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #303a35;
+  background: #fff;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+.home { min-height: 100svh; display: grid; place-items: center; padding: 28px; }
+.storybook {
+  /* Reserve the full spread so opening never moves the booklet vertically. */
+  width: min(100%, 1120px, calc((100svh - 96px) * 948 / 583));
+  aspect-ratio: 948 / 583;
+  display: grid;
+  place-items: center;
+}
+.magazine {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 1px 3px 4px 1px;
+  background: #f5f4ee;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  isolation: isolate;
+  box-shadow: 0 2px 2px #20251e20, 0 5px 0 -2px #e2e1da,
+    0 7px 0 -3px #bfbfb6, 0 9px 0 -4px #eeede7,
+    0 18px 25px -14px #252b2450, 0 34px 65px -30px #252b2438;
+}
+.magazine.is-closed { width: 50%; grid-template-columns: 1fr; }
+.magazine:focus-visible { outline: 2px solid #596b5d; outline-offset: 12px; }
+.magazine-page { position: relative; min-width: 0; height: 100%; overflow: hidden; }
+.magazine-paper {
+  background-color: #faf9f4;
+  background-image: repeating-linear-gradient(0deg, #6f695603 0 1px, transparent 1px 3px),
+    linear-gradient(90deg, #fff5, transparent 20%, #fff2 80%);
+}
+.is-open .magazine-paper:first-child {
+  border-radius: 2px 0 0 2px;
+  box-shadow: inset -1px 0 #8b877c18, inset -9px 0 15px -9px #55504420, inset -35px 0 34px -33px #4b473318;
+}
+.is-open .magazine-paper:nth-child(2) {
+  border-radius: 0 3px 3px 0;
+  box-shadow: inset 1px 0 #fff, inset 9px 0 15px -10px #55504424, inset 35px 0 34px -33px #4b473318;
+}
+.magazine-cover {
+  background-color: #acb8a4;
+  background-image: repeating-linear-gradient(0deg, #fff00000 0 2px, #28362408 2px 3px),
+    linear-gradient(90deg, #56644c10, #ffffff35 3%, transparent 6%, #ffffff15 80%, #48513d08);
+  box-shadow: inset 2px 0 2px #fff5, inset 7px 0 8px -5px #36412c18, inset -1px 0 #58624e18;
+}
+.cover-title { position: absolute; top: 9%; left: 9%; font-family: 'Times New Roman', Times, serif; font-size: clamp(1.6rem, 5.4vw, 4.8rem); font-weight: 400; letter-spacing: -.07em; line-height: 1; }
+.back-mark { position: absolute; bottom: 7%; left: 50%; transform: translateX(-50%); font-family: 'Times New Roman', Times, serif; font-size: clamp(1rem, 2vw, 1.5rem); }
+.turning-page {
+  position: absolute; z-index: 2; inset: 0 0 0 50%; pointer-events: none;
+  background: linear-gradient(90deg, #b3ae9c10, #faf9f4 15%, #fffdf6 75%, #eeeae0);
+  transform-origin: left center;
+  animation: page-turn 720ms ease-in-out both;
+  box-shadow: 5px 6px 15px #38372b25;
+}
+.turning-back { inset: 0 50% 0 0; transform-origin: right center; animation-name: page-turn-back; }
+.turning-cover { background-color: #acb8a4; background-image: linear-gradient(90deg, #6a786018, #acb8a4 25%, #c2ccb9); }
+.is-closed .turning-page { inset: 0; }
+/* Keep the spine and page sizes continuous while the centered cover opens.
+   Only the leaf rotates; an orthographic fold keeps the book face-on. */
+.is-turning-front-cover {
+  background: transparent;
+  box-shadow: none;
+}
+.is-turning-front-cover > .magazine-page:first-child { visibility: hidden; }
+.is-turning-front-cover > .magazine-page:nth-child(2) {
+  box-shadow: 0 2px 2px #20251e20, 0 5px 0 -2px #e2e1da,
+    0 18px 25px -14px #252b2450;
+}
+.is-opening { animation: center-opening 720ms ease-in-out both; }
+.is-closing { animation: center-opening 720ms ease-in-out reverse both; }
+.front-cover-leaf {
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 0 50%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  animation: open-front-cover 720ms ease-in-out both;
+}
+.is-closing .front-cover-leaf { animation-direction: reverse; }
+.cover-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.cover-reverse { transform: rotateY(180deg); }
+.cover-reverse > .magazine-paper {
+  box-shadow: inset -1px 0 #8b877c18, inset -9px 0 15px -9px #55504420,
+    inset -35px 0 34px -33px #4b473318;
+}
+@keyframes open-front-cover {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(-180deg); }
+}
+@keyframes center-opening {
+  from { transform: translateX(-25%); }
+  to { transform: translateX(0); }
+}
+/* A flat fold: no perspective or rotation of the magazine itself. */
+@keyframes page-turn {
+  0% { transform: scaleX(1); opacity: 1; }
+  48% { transform: scaleX(.015); opacity: 1; }
+  49% { transform: scaleX(-.015); opacity: 1; }
+  92% { transform: scaleX(-1); opacity: .8; }
+  100% { transform: scaleX(-1); opacity: 0; }
+}
+@keyframes page-turn-back {
+  0% { transform: scaleX(1); opacity: 1; }
+  48% { transform: scaleX(.015); opacity: 1; }
+  49% { transform: scaleX(-.015); opacity: 1; }
+  92% { transform: scaleX(-1); opacity: .8; }
+  100% { transform: scaleX(-1); opacity: 0; }
+}
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 600px) { .home { padding: 16px; } }
+@media (prefers-reduced-motion: reduce) {
+  .turning-page, .front-cover-leaf { animation: none; display: none; }
+  .is-opening, .is-closing { animation: none; }
+}
+
+/* Figma pages are 474 × 583. Every collage coordinate scales uniformly. */
+.scrapbook-artwork { position: absolute; inset: 0; container-type: inline-size; overflow: hidden; background: #fff; pointer-events: none; }
+.artwork-slot { position: absolute; display: flex; align-items: center; justify-content: center; }
+.artwork-crop { position: relative; flex: none; overflow: hidden; }
+.artwork-crop img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; pointer-events: none; user-select: none; }
+
+/* Depth follows collage stacking; at rest all assets retain Figma coordinates. */
+.artwork-slot {
+  transform: translate(
+    calc(var(--parallax-x, 0) * var(--layer-depth, 1) * .24cqw),
+    calc(var(--parallax-y, 0) * var(--layer-depth, 1) * .24cqw)
+  );
+  transition: transform 180ms ease-out;
+}
+.magazine[data-turning='true'] .artwork-slot { transform: none; transition: none; }
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  .artwork-slot { transform: none; transition: none; }
+}
