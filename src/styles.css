@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'PP Kyoto';
+  src: url('./assets/fonts/PPKyoto-Extrabold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+
 :root {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #303a35;
@@ -8,6 +16,17 @@
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
 .home { min-height: 100svh; display: grid; place-items: center; padding: 28px; }
+.home--tiled {
+  background-color: #fdfeff;
+  background-image:
+    linear-gradient(to right, #dce8eb 1px, transparent 1px),
+    linear-gradient(to bottom, #dce8eb 1px, transparent 1px);
+  background-size: 25px 25px;
+  background-position: 0 -12.5px;
+}
+@media (forced-colors: active) {
+  .home--tiled { background-image: none; background-color: Canvas; }
+}
 .storybook {
   /* Reserve the full spread so opening never moves the booklet vertically. */
   width: min(100%, 1120px, calc((100svh - 96px) * 948 / 583));
@@ -29,9 +48,8 @@ body { margin: 0; min-width: 320px; }
   text-align: left;
   cursor: pointer;
   isolation: isolate;
-  box-shadow: 0 2px 2px #20251e20, 0 5px 0 -2px #e2e1da,
-    0 7px 0 -3px #bfbfb6, 0 9px 0 -4px #eeede7,
-    0 18px 25px -14px #252b2450, 0 34px 65px -30px #252b2438;
+  box-shadow: 0 1px 2px #252b2433, 1px 10px 12px -6px #252b244a,
+    6px 25px 34px -14px #252b2459, 12px 46px 68px -23px #252b2447;
 }
 .magazine.is-closed { width: 50%; grid-template-columns: 1fr; }
 .magazine:focus-visible { outline: 2px solid #596b5d; outline-offset: 12px; }
@@ -57,16 +75,6 @@ body { margin: 0; min-width: 320px; }
 }
 .cover-title { position: absolute; top: 9%; left: 9%; font-family: 'Times New Roman', Times, serif; font-size: clamp(1.6rem, 5.4vw, 4.8rem); font-weight: 400; letter-spacing: -.07em; line-height: 1; }
 .back-mark { position: absolute; bottom: 7%; left: 50%; transform: translateX(-50%); font-family: 'Times New Roman', Times, serif; font-size: clamp(1rem, 2vw, 1.5rem); }
-.turning-page {
-  position: absolute; z-index: 2; inset: 0 0 0 50%; pointer-events: none;
-  background: linear-gradient(90deg, #b3ae9c10, #faf9f4 15%, #fffdf6 75%, #eeeae0);
-  transform-origin: left center;
-  animation: page-turn 720ms ease-in-out both;
-  box-shadow: 5px 6px 15px #38372b25;
-}
-.turning-back { inset: 0 50% 0 0; transform-origin: right center; animation-name: page-turn-back; }
-.turning-cover { background-color: #acb8a4; background-image: linear-gradient(90deg, #6a786018, #acb8a4 25%, #c2ccb9); }
-.is-closed .turning-page { inset: 0; }
 /* Keep the spine and page sizes continuous while the centered cover opens.
    Only the leaf rotates; an orthographic fold keeps the book face-on. */
 .is-turning-front-cover {
@@ -109,25 +117,10 @@ body { margin: 0; min-width: 320px; }
   from { transform: translateX(-25%); }
   to { transform: translateX(0); }
 }
-/* A flat fold: no perspective or rotation of the magazine itself. */
-@keyframes page-turn {
-  0% { transform: scaleX(1); opacity: 1; }
-  48% { transform: scaleX(.015); opacity: 1; }
-  49% { transform: scaleX(-.015); opacity: 1; }
-  92% { transform: scaleX(-1); opacity: .8; }
-  100% { transform: scaleX(-1); opacity: 0; }
-}
-@keyframes page-turn-back {
-  0% { transform: scaleX(1); opacity: 1; }
-  48% { transform: scaleX(.015); opacity: 1; }
-  49% { transform: scaleX(-.015); opacity: 1; }
-  92% { transform: scaleX(-1); opacity: .8; }
-  100% { transform: scaleX(-1); opacity: 0; }
-}
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 @media (max-width: 600px) { .home { padding: 16px; } }
 @media (prefers-reduced-motion: reduce) {
-  .turning-page, .front-cover-leaf { animation: none; display: none; }
+  .front-cover-leaf { animation: none; display: none; }
   .is-opening, .is-closing { animation: none; }
 }
 
@@ -137,15 +130,330 @@ body { margin: 0; min-width: 320px; }
 .artwork-crop { position: relative; flex: none; overflow: hidden; }
 .artwork-crop img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; pointer-events: none; user-select: none; }
 
-/* Depth follows collage stacking; at rest all assets retain Figma coordinates. */
-.artwork-slot {
-  transform: translate(
-    calc(var(--parallax-x, 0) * var(--layer-depth, 1) * .24cqw),
-    calc(var(--parallax-y, 0) * var(--layer-depth, 1) * .24cqw)
-  );
-  transition: transform 180ms ease-out;
+/* Autonomous layered motion: no pointer input; base coordinates stay in Figma space. */
+.artwork-slot { animation: collage-parallax 14s ease-in-out var(--parallax-delay, 0s) infinite; }
+.scrapbook-artwork[data-inside-page='3'],
+.scrapbook-artwork[data-inside-page='4'],
+.scrapbook-artwork[data-inside-page='5'],
+.scrapbook-artwork[data-inside-page='6'],
+.scrapbook-artwork[data-inside-page='7'],
+.scrapbook-artwork[data-inside-page='8'] { background: #f7f5f5; }
+.magazine[data-turning='true'] .artwork-slot { animation-play-state: paused; }
+@keyframes collage-parallax {
+  0%, 50%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(calc(var(--layer-depth, 1) * .16cqw), calc(var(--layer-depth, 1) * -.12cqw)); }
+  75% { transform: translate(calc(var(--layer-depth, 1) * -.16cqw), calc(var(--layer-depth, 1) * .12cqw)); }
 }
-.magazine[data-turning='true'] .artwork-slot { transform: none; transition: none; }
-@media (prefers-reduced-motion: reduce), (hover: none) {
-  .artwork-slot { transform: none; transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .artwork-slot { animation: none; transform: none; }
+}
+
+/* The live sculpture occupies the original sphere layer, not a new layout slot. */
+.chrome-sphere-component { position: absolute; inset: 0; display: block; pointer-events: auto; }
+.chrome-sphere-component > chrome-sculpture { position: absolute; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; }
+.chrome-sphere-component[data-ready='true'] > chrome-sculpture { opacity: 1; }
+.chrome-sphere-component[data-ready='true'] > .chrome-sphere-fallback { visibility: hidden; }
+
+/* The wine itself is animated; keep the person, bottle, and glass motionless. */
+.artwork-slot[data-node-id='9:234'] { animation: none; transform: none; }
+.wine-pour { position: absolute; inset: 0; display: block; }
+
+/* One restrained entrance per page reveal, composed with the original rotation. */
+.artwork-pop {
+  animation: artwork-pop-in 420ms cubic-bezier(.2, .7, .3, 1) var(--pop-delay, 40ms) both;
+}
+.magazine[data-turning='true'] .artwork-pop { animation-play-state: paused; }
+@keyframes artwork-pop-in {
+  from { scale: .97; opacity: .65; }
+  75% { scale: 1.006; opacity: 1; }
+  to { scale: 1; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .artwork-pop { animation: none; scale: 1; opacity: 1; }
+}
+
+/* Transparent rendered video inherits the original fish graphic's crop/flip. */
+.swimming-fish-video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+.front-cover-artwork { background: #f7f5f5; }
+.front-cover-artwork > p { position: absolute; margin: 0; font-family: 'PP Kyoto', serif; font-weight: 800; line-height: normal; white-space: nowrap; }
+.front-cover-date { left: 4.219409%; top: 3.945111%; font-size: 15.189873cqw; color: #cd514a; }
+.front-cover-from { left: 4.852321%; top: 25.557462%; font-size: 6.751055cqw; color: #000; }
+.front-cover-to { left: 19.198312%; top: 32.590051%; font-size: 6.751055cqw; color: #000; }
+
+.back-cover-artwork { background: #f7f5f5; }
+.is-turning-back-cover, .is-flipping-over { background: transparent; box-shadow: none; }
+.is-turning-back-cover > .magazine-page:first-child,
+.is-flipping-over > .magazine-page { visibility: hidden; }
+.is-closing-back { animation: center-opening 720ms ease-in-out reverse both; }
+.is-opening-back { animation: center-opening 720ms ease-in-out both; }
+.back-cover-leaf {
+  position: absolute; z-index: 3; inset: 0 50% 0 0;
+  transform-origin: right center; transform-style: preserve-3d;
+  pointer-events: none; animation: close-back-cover 720ms ease-in-out both;
+}
+.is-opening-back .back-cover-leaf { animation-direction: reverse; }
+.whole-book-flip {
+  position: absolute; z-index: 3; inset: 0;
+  transform-origin: center; transform-style: preserve-3d;
+  pointer-events: none; animation: close-back-cover 720ms ease-in-out both;
+}
+@keyframes close-back-cover {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(180deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .back-cover-leaf, .whole-book-flip { animation: none; display: none; }
+  .is-closing-back, .is-opening-back { animation: none; }
+}
+
+/* Persistent physical sheets: real artwork on both sides, never a blank overlay. */
+.page-deck { position: absolute; inset: 0; display: block; transform-style: preserve-3d; }
+.page-deck[hidden], .deck-base[hidden], .interior-sheet[hidden], .page-face[hidden] { display: none; }
+.deck-base { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 1; }
+.deck-base-left { left: 0; }
+.deck-base-right { right: 0; }
+.interior-sheet {
+  position: absolute; inset: 0 0 0 50%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+}
+.interior-sheet.is-turning-sheet {
+  transition: transform 720ms cubic-bezier(.42, 0, .24, 1);
+}
+.page-face { pointer-events: none; }
+.magazine .page-face-front > .magazine-paper,
+.magazine .deck-base-right > .magazine-paper {
+  box-shadow: inset 1px 0 #fff, inset 9px 0 15px -10px #55504424, inset 35px 0 34px -33px #4b473318;
+}
+.magazine .page-face-back > .magazine-paper,
+.magazine .deck-base-left > .magazine-paper {
+  box-shadow: inset -1px 0 #8b877c18, inset -9px 0 15px -9px #55504420, inset -35px 0 34px -33px #4b473318;
+}
+.is-turning-sheet .page-face::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, #28251925, transparent 40%, #28251912);
+  animation: sheet-fold-shade 720ms cubic-bezier(.42, 0, .24, 1) both;
+}
+@keyframes sheet-fold-shade {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+/* The cover's reverse supplies the left side until the cover has landed. */
+.is-turning-front-cover .page-deck,
+.is-turning-back-cover .page-deck { clip-path: inset(0 0 0 50%); }
+@media (prefers-reduced-motion: reduce) {
+  .interior-sheet.is-turning-sheet { transition: none; }
+  .is-turning-sheet .page-face::after { animation: none; opacity: 0; }
+}
+
+/* Paper thickness and a localized binding crease lift the book off the tiles. */
+.magazine::before {
+  content: ''; position: absolute; z-index: -1;
+  inset: 4px -3px -8px 2px;
+  border-radius: 2px 4px 4px 2px;
+  background: repeating-linear-gradient(to bottom, #faf9f4 0 1px, #c8c6bc 1px 2px, #eeede6 2px 3px);
+  border: 1px solid #cbc9bf;
+  box-shadow: 1px 2px 2px #28261924;
+  pointer-events: none;
+}
+.magazine::after {
+  content: ''; position: absolute; z-index: 8;
+  top: 0; bottom: 0; left: 50%; width: clamp(14px, 2.4%, 28px);
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, #29251708 16%, #29251724 42%, #29251752 49%, #29251766 50%, #ffffff80 52%, #29251724 58%, #29251709 82%, transparent);
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+.magazine.is-closed::after {
+  left: 0; width: 12px; transform: none;
+  background: linear-gradient(90deg, #29251738, #29251714 28%, #ffffff35 48%, transparent);
+}
+.magazine[data-turning='true']::after { opacity: 0; }
+.is-turning-front-cover::before,
+.is-turning-back-cover::before,
+.is-flipping-over::before { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .magazine::after { transition: none; }
+}
+@media (forced-colors: active) {
+  .magazine::after { background: none; border-left: 1px solid CanvasText; }
+}
+
+.character-depth-component { position: absolute; inset: 0; display: block; pointer-events: auto; }
+.character-depth-component > character-depth { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+.character-depth-component[data-ready='true'] > character-depth { opacity: 1; }
+.character-depth-component[data-ready='true'] > .character-depth-fallback { visibility: hidden; }
+
+/* One intact Figma page, centered inside the usable phone viewport. */
+.home:has(.storybook--mobile) {
+  --mobile-padding: max(clamp(16px, 4vmin, 28px), env(safe-area-inset-top, 0px), env(safe-area-inset-right, 0px), env(safe-area-inset-bottom, 0px), env(safe-area-inset-left, 0px));
+  min-height: 100dvh;
+  padding: var(--mobile-padding);
+}
+.storybook--mobile {
+  width: min(100%, 474px, calc((100dvh - 2 * var(--mobile-padding, 16px) - 12px) * 474 / 583));
+  aspect-ratio: 474 / 583;
+}
+.magazine.magazine--mobile {
+  display: block;
+  width: 100%;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+  -webkit-tap-highlight-color: transparent;
+}
+.magazine--mobile:active { cursor: grabbing; }
+.mobile-page-stack { position: absolute; inset: 0; display: block; overflow: hidden; perspective: 1200px; }
+.mobile-leaf { position: absolute; inset: 0; display: block; }
+.mobile-leaf[hidden] { display: none; }
+.mobile-leaf-in { z-index: 2; animation: mobile-page-enter 360ms cubic-bezier(.2, .65, .3, 1) both; }
+.mobile-leaf-out { z-index: 1; pointer-events: none; animation: mobile-page-exit 360ms cubic-bezier(.2, .65, .3, 1) both; }
+@keyframes mobile-page-enter {
+  from { transform: translateX(calc(var(--page-direction) * 12%)) rotateY(calc(var(--page-direction) * -8deg)); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes mobile-page-exit {
+  from { transform: none; opacity: 1; }
+  to { transform: translateX(calc(var(--page-direction) * -12%)) rotateY(calc(var(--page-direction) * 8deg)); opacity: 0; }
+}
+.mobile-page-control:focus-visible {
+  z-index: 10; width: auto; height: auto; margin: 8px; padding: 8px;
+  clip-path: none; white-space: normal; background: #fdfeff; color: #303a35;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-leaf-in, .mobile-leaf-out { animation: none; }
+}
+
+/* Figma 23:3032: Kyoto text links with an 8px vertical gap. */
+.home:has(.scrapbook-navigation) { padding-inline: 128px; }
+.scrapbook-navigation {
+  position: fixed;
+  top: 50%;
+  left: 24px;
+  transform: translateY(-50%);
+  z-index: 30;
+}
+.scrapbook-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: 'PP Kyoto', serif;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: normal;
+  color: #000;
+}
+.scrapbook-nav[hidden] { display: none; }
+.scrapbook-nav button {
+  display: block; width: 100%; padding: 0; margin: 0;
+  border: 0; border-radius: 0; background: transparent;
+  font: inherit; color: inherit; line-height: inherit;
+  text-align: left; white-space: nowrap; cursor: pointer; opacity: .5;
+}
+.scrapbook-nav button[aria-current='page'], .scrapbook-nav button:hover,
+.scrapbook-nav button:focus-visible { opacity: 1; }
+.scrapbook-nav button:focus-visible, .scrapbook-nav-toggle:focus-visible {
+  outline: 2px solid #596b5d; outline-offset: 4px;
+}
+/* Keep the single page centered and clear of the phone's edge tab. */
+.home:has(.scrapbook-navigation--mobile) { padding-inline: max(40px, var(--mobile-padding, 16px)); }
+.scrapbook-navigation--mobile {
+  left: max(0px, env(safe-area-inset-left, 0px));
+  display: flex; align-items: center; gap: 8px;
+}
+.scrapbook-nav-toggle {
+  width: 32px; height: 80px; padding: 8px 4px;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  border: 1px solid #dce8eb; border-radius: 4px 0 0 4px;
+  background: #fdfeff; color: #000; cursor: pointer;
+  font-family: 'PP Kyoto', serif; font-size: 18px; font-weight: 800;
+}
+.scrapbook-navigation--mobile .scrapbook-nav {
+  padding: 16px; border: 1px solid #dce8eb; border-radius: 4px;
+  background: #fdfeff; box-shadow: 0 4px 18px #252b2420;
+  max-height: calc(100dvh - 32px); overflow-y: auto;
+}
+
+/* Figma 25:3060: original 310 × 86 layout, with macOS-style material. */
+.music-player {
+  position: fixed; z-index: 40; top: 24px; right: 24px;
+  width: 310px; aspect-ratio: 310 / 86; container-type: inline-size;
+  border: 1px solid #ffffffa6; border-radius: 20px;
+  background: #f5f5f7d9; color: #1d1d1f;
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: 0 8px 24px #00000014, 0 2px 5px #0000000a, inset 0 0 0 1px #00000008;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  touch-action: pan-y;
+}
+.music-player-main { position: absolute; inset: 0; }
+.music-controls .music-play {
+  position: absolute; left: 79.354839cqw; top: 6.129032cqw;
+  display: grid; place-items: center; width: 10.322581cqw; height: 10.322581cqw;
+  padding: 0; border: 0; border-radius: 50%; background: transparent; color: #1d1d1f; cursor: pointer;
+}
+.music-controls .music-play:hover { background: #00000006; }
+.music-controls button:focus-visible, .music-timeline input:focus-visible,
+.music-dismiss:focus-visible, .music-reveal:focus-visible { outline: 2px solid #007aff; outline-offset: 2px; }
+.music-play-glyph { display: block; width: 22.5167px; height: 19.5px; transform: rotate(90deg); }
+.music-play-glyph img { display: block; filter: brightness(0); }
+.music-pause-glyph { display: block; width: 15px; height: 20px; border-inline: 5px solid currentColor; border-radius: 1px; }
+.music-skip { position: absolute; top: 6.451613cqw; display: grid; place-items: center; width: 9.032258cqw; height: 9.677419cqw; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #1d1d1f; cursor: pointer; }
+.music-previous { left: 69.354839cqw; }
+.music-next { left: 90cqw; }
+.music-skip:hover:not(:disabled) { background: #00000006; }
+.music-skip:disabled { opacity: .3; cursor: default; }
+.music-skip-glyph { display: block; position: relative; width: 12px; height: 12px; border-right: 2px solid currentColor; }
+.music-skip-glyph::before { content: ''; position: absolute; top: 1px; left: 0; border-left: 8px solid currentColor; border-block: 5px solid transparent; }
+.music-skip-previous { transform: rotate(180deg); }
+.music-details { position: absolute; left: 34.83871cqw; top: 2.903226cqw; width: 29.677419cqw; min-width: 0; }
+.music-status { display: block; margin-bottom: 0; font-size: 8px; line-height: 12px; font-weight: 500; color: #6e6e73; white-space: nowrap; }
+.music-title { font-size: 12px; line-height: 16px; font-weight: 600; }
+.music-artist { font-size: 12px; line-height: 16px; font-weight: 500; color: #6e6e73; }
+.music-marquee { overflow: hidden; min-width: 0; white-space: nowrap; }
+.music-marquee-track { display: inline-flex; gap: 28px; vertical-align: top; width: max-content; }
+.music-marquee-track.is-overflowing { animation: music-radio-scroll var(--marquee-duration) linear 2s infinite; }
+.music-marquee:hover .music-marquee-track { animation-play-state: paused; }
+@keyframes music-radio-scroll { 0%, 12% { transform: translateX(0); } 90%, 100% { transform: translateX(calc(-1 * var(--marquee-distance))); } }
+.music-artwork { position: absolute; left: 6.129032cqw; top: 4.516129cqw; width: 23.548387cqw; height: 17.741935cqw; }
+.music-vinyl { position: absolute; top: 1.290323cqw; left: 9.032258cqw; width: 45px; height: 45px; border-radius: 50%; }
+.music-vinyl > img { display: block; }
+.music-vinyl::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 2px, #ffffff17 2px 2.5px); }
+.music-vinyl > span { position: absolute; z-index: 1; inset: 16px; border-radius: 50%; background: var(--album-color); }
+.music-vinyl > span::after { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: #f7f5f5; }
+.music-album { position: absolute; left: 0; top: 0; width: 17.741935cqw; height: 17.741935cqw; overflow: hidden; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; padding: 5px; background: var(--album-color); box-shadow: 0 1px 3px #00000021; color: #1d1d1f; }
+.music-album > span { font-size: 7px; line-height: 9px; }
+.music-album > strong { font-size: 26px; line-height: 27px; font-weight: 700; align-self: flex-end; }
+.music-album > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.music-timeline { position: absolute; left: 6.129032cqw; right: 6.129032cqw; bottom: 1px; height: 14px; }
+.music-timeline > span { display: none; }
+.music-timeline input { appearance: none; -webkit-appearance: none; width: 100%; min-width: 0; height: 14px; margin: 0; background: transparent; cursor: pointer; border-radius: 3px; }
+.music-timeline input::-webkit-slider-runnable-track { height: 2px; border-radius: 2px; background: linear-gradient(to right, #6e6e73 var(--track-progress), #00000012 var(--track-progress)); }
+.music-timeline input::-moz-range-track { height: 2px; border-radius: 2px; background: #00000012; }
+.music-timeline input::-moz-range-progress { height: 2px; border-radius: 2px; background: #6e6e73; }
+.music-timeline input::-webkit-slider-thumb { -webkit-appearance: none; width: 6px; height: 6px; margin-top: -2px; border: 0; border-radius: 50%; background: #6e6e73; }
+.music-timeline input::-moz-range-thumb { width: 6px; height: 6px; border: 0; border-radius: 50%; background: #6e6e73; }
+.music-dismiss, .music-reveal { display: none; }
+/* Keep the centered book below the desktop widget, without a bottom dock. */
+.home:has(.music-player) { --player-clearance: max(126px, calc(env(safe-area-inset-bottom, 0px) + 114px)); }
+.home:has(.music-player) .storybook:not(.storybook--mobile) { width: min(100%, 1120px, calc((100svh - 2 * var(--player-clearance)) * 948 / 583)); }
+.home:has(.music-player) .storybook--mobile { width: min(100%, 474px, calc((100dvh - 2 * var(--player-clearance)) * 474 / 583)); }
+@media (max-width: 767px), (hover: none) and (pointer: coarse) and (max-width: 1024px) {
+  .music-player { top: auto; right: max(12px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); width: min(310px, calc(100vw - 24px)); transition: transform 220ms ease, visibility 220ms; }
+  .music-player[data-collapsed='true'] { transform: translateX(calc(100% + 24px)); visibility: hidden; pointer-events: none; }
+  .music-dismiss { position: absolute; z-index: 3; display: grid; place-items: center; top: -28px; right: 2px; width: 24px; height: 24px; padding: 0; border: 1px solid #0000000a; border-radius: 50%; background: #f5f5f7e6; color: #6e6e73; font: 20px/1 -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; }
+  .music-reveal[data-collapsed='true'] { position: fixed; display: grid; place-items: center; z-index: 40; right: 0; bottom: max(24px, env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; border: 1px solid #ffffffa6; border-right: 0; border-radius: 12px 0 0 12px; background: #f5f5f7d9; -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); color: #1d1d1f; box-shadow: 0 3px 12px #00000012; font-size: 24px; cursor: pointer; }
+}
+@media (min-width: 480px) and (max-height: 500px) {
+  .home:has(.music-player) .storybook--mobile { width: min(100%, 474px, calc((100dvh - 2 * var(--mobile-padding, 16px) - 12px) * 474 / 583)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .music-marquee-track.is-overflowing { animation: none; }
+  .music-player { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .music-player, .music-reveal[data-collapsed='true'] { background: #f5f5f7; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }

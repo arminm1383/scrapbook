@@ -1,0 +1,62 @@
+[
+  {
+    "id": "veridis-quo",
+    "sourceFile": "Daft Punk - Veridis Quo (Official Audio).mp3",
+    "title": "Veridis Quo",
+    "artist": "Daft Punk",
+    "album": "Discovery",
+    "durationSource": "Local MP3 measured with ffprobe; native audio metadata is authoritative during playback.",
+    "spotify": "https://open.spotify.com/track/28qpFPkwKQWFeSw2Le6aoV",
+    "artwork": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e029034364176f931f5eba3382e"
+  },
+  {
+    "id": "time-million",
+    "sourceFile": "Feater - Time Million feat. Vilja Larjosto.mp3",
+    "title": "Time Million",
+    "artist": "Feater, Vilja Larjosto",
+    "album": "Socialo Blanco",
+    "durationSource": "Local MP3 measured with ffprobe; native audio metadata is authoritative during playback.",
+    "spotify": "https://open.spotify.com/track/6qMhpDgWAubisGyfTmLEUO",
+    "artwork": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02aa2b9e85584f59616db6aee0"
+  },
+  {
+    "id": "gold-teeth",
+    "sourceFile": "Gold Teeth (2).mp3",
+    "title": "Gold Teeth",
+    "artist": "Blood Orange, Project Pat, Gangsta Boo, Tinashe",
+    "album": "Angel's Pulse",
+    "durationSource": "Local MP3 measured with ffprobe; native audio metadata is authoritative during playback.",
+    "spotify": "https://open.spotify.com/track/3BbWvLOFaxx0npzxfRixyO",
+    "artwork": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02c705e4061a1de1139ced6554"
+  },
+  {
+    "id": "metaphysical",
+    "sourceFile": "Metaphysical.mp3",
+    "title": "Metaphysical",
+    "artist": "Single Gun Theory",
+    "album": "Flow, River Of My Soul",
+    "durationSource": "Local MP3 measured with ffprobe; native audio metadata is authoritative during playback.",
+    "spotify": "https://open.spotify.com/track/44hswj2mayNlPAGY9mL3FP",
+    "artwork": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02f0064a7ee2ffed94ca9a3969"
+  },
+  {
+    "id": "hardly-ever-smile",
+    "sourceFile": "POiSON GiRL FRiEND Hardly Ever Smile Without You.mp3",
+    "title": "HARDLY EVER SMILE(without you)",
+    "artist": "POiSON GiRL FRiEND",
+    "album": "Melting Moment",
+    "durationSource": "Local MP3 measured with ffprobe; native audio metadata is authoritative during playback.",
+    "spotify": "https://open.spotify.com/track/6dwCn6DV1Fbw46BC7VDZqp",
+    "artwork": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02f78bb04e337eb2cb5e249cb4"
+  },
+  {
+    "id": "times-a-wastin",
+    "sourceFile": "Time's A Wastin.mp3",
+    "title": "Time's A Wastin",
+    "artist": "Erykah Badu",
+    "album": "Mama's Gun",
+    "durationSource": "Local MP3 measured with ffprobe; native audio metadata is authoritative during playback.",
+    "spotify": "https://open.spotify.com/track/6q8fYYujrQxXckq1tTtqqi",
+    "artwork": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e020d934cb462fae5a26f829efb"
+  }
+]
